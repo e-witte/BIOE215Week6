@@ -1,0 +1,129 @@
+---
+title: "Week6_work"
+format: html
+editor: visual
+---
+
+### Review browser and reprex
+
+6 - Eric
+
+browser puts a pause in the workflow that allows you to visualize individual outputs.
+
+```{r}
+library(palmerpenguins)
+library(tidyverse)
+
+traits_r2 <- function (trait1, trait2) {
+  summary(lm(trait1 ~ trait2))$r.squared
+}
+
+penguins %>% 
+  summarize(flipper_bill_r2 = traits_r2(flipper_length_mm, bill_length_mm))
+```
+
+Q1: tibble has no rows-- we expect the tibble to have a (many) row(s)
+
+Q2: Place Q2 above summary function so that you can poke through the data.
+
+Q3: List indexed by name.
+
+Q4: rsquared mislabeled -\> r.squared
+
+## Adding group_by()
+
+```{r}
+# Pipeline 1
+penguins %>% 
+  group_by(species) %>% 
+  summarize(flipper_bill_r2 = traits_r2(flipper_length_mm, bill_length_mm))
+
+# Pipeline 2
+penguins %>% 
+  group_by(species, island) %>% 
+  summarize(flipper_bill_r2 = traits_r2(flipper_length_mm, bill_length_mm),
+            .groups = "drop")
+```
+
+Q5: pipeline 1 calls traits_r2 thrice.
+
+Q6: 13 times, but if we
+
+```{r}
+# Pipeline 3
+penguins %>% 
+  group_by(species, island, sex ) %>% 
+  summarize(flipper_bill_r2 = traits_r2(flipper_length_mm, bill_length_mm),
+            .groups = "drop")
+```
+
+```{r}
+traits_r2 <- function (trait1, trait2) {
+  browser()
+  summary(lm(trait1 ~ trait2))$r.squared
+}
+
+set.seed(12345)
+penguins2 <- penguins %>% 
+  drop_na(sex) %>% 
+  sample_n(25)
+penguins2[7, 3:6] <- NA
+
+penguins2 %>% 
+  drop_na(species, island, sex, bill_length_mm, flipper_length_mm) %>% 
+  group_by(species, island, sex ) %>% 
+  summarize(flipper_bill_r2 = traits_r2(flipper_length_mm, bill_length_mm),
+            .groups = "drop")
+
+```
+
+Q7: Fatal error in lm.fit(). !0 (non-NA) cases
+
+Q8: Did it!
+
+Q9: DropNA
+
+## ggplot
+
+```{r}
+library(palmerpenguins)
+library(tidyverse)
+
+ggplot(data = penguins, aes (x = body_mass_g, y = flipper_length_mm)) + geom_point()
+```
+
+Q10:
+
+```{r}
+ggplot(data = penguins, aes (x = body_mass_g, y = bill_depth_mm)) + geom_point()
+```
+
+Q11:
+
+```{r}
+ggplot(data = penguins, aes (x = body_mass_g, y = bill_depth_mm, col = species)) + geom_point()
+```
+
+## Customizing scales
+
+```{r}
+ggplot(data = penguins) +
+  # You can also define aesthetics directly inside the geometries
+  geom_point(aes(x = body_mass_g, 
+                 y = flipper_length_mm,
+                 color = species)) +
+  # x aesthetic, continuous scale
+  scale_x_continuous(
+    # change the axis name
+    name = "Body mass (g)",
+    # change the limits
+    limits = c(2000, 8000)
+  ) +
+  # color aesthetic, manual scale
+  scale_color_manual(
+    # set the values for the colors
+    values = c(Adelie = "cornflowerblue",
+               Chinstrap = "firebrick",
+               Gentoo = "darkorchid")
+  )
+```
