@@ -127,3 +127,65 @@ ggplot(data = penguins) +
                Gentoo = "darkorchid")
   )
 ```
+
+Q12:
+
+```{r}
+ggplot(data = penguins) +
+  # You can also define aesthetics directly inside the geometries
+  geom_point(aes(x = body_mass_g, 
+                 y = flipper_length_mm,
+                 color = species)) +
+  # x aesthetic, continuous scale
+  scale_x_continuous(
+    # change the axis name
+    name = "Body mass (g)",
+    # change the limits
+    limits = c(2000, 8000)
+  ) +
+  scale_y_continuous(name = "Flipper length (mm)", limits = c(150, 250))
+  # color aesthetic, manual scale
+  scale_color_manual(
+    # set the values for the colors
+    values = c(Adelie = "cornflowerblue",
+               Chinstrap = "firebrick",
+               Gentoo = "darkorchid")
+  )
+```
+
+Q13:
+
+```{r}
+ggplot(data = penguins) +
+  # You can also define aesthetics directly inside the geometries
+  geom_point(aes(x = body_mass_g, 
+                 y = flipper_length_mm,
+                 color = species)) +
+  # x aesthetic, continuous scale
+  scale_x_continuous(
+    # change the axis name
+    name = "Body mass (g)",
+    # change the limits
+    limits = c(2000, 8000)
+  ) +
+  scale_y_continuous(name = "Flipper length (mm)", limits = c(150, 250)) +
+  # color aesthetic, manual scale
+  scale_colour_brewer(palette = "Dark2")
+  
+```
+
+## Other useful geometries
+
+```{r}
+library(palmerpenguins)
+library(tidyverse)
+
+ggplot(data = penguins, aes(x = body_mass_g)) + geom_histogram()
+```
+
+```{r}
+library(palmerpenguins)
+library(tidyverse)
+
+ggplot(data = penguins, aes(x = species, y = bill_depth_mm)) + geom_boxplot()
+```
